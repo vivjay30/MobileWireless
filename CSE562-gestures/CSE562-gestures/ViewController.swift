@@ -119,8 +119,8 @@ class ViewController: UIViewController {
     }
     
     func updateChart(frequencies: [Double], amplitudes: [Double]) {
+        // Draw the FFT chart with the values
         var values: [ChartDataEntry] = []
-        //for i in (0...255){
         for i in (0...Int(Double(FFT_SIZE)/2) - 1){
             values.append(ChartDataEntry(x: frequencies[i], y: amplitudes[i]))
         }
@@ -136,6 +136,7 @@ class ViewController: UIViewController {
     }
     
     func calibrationStep(amplitudes: [Double]) {
+        // Add the observed amplitude for every frequency bin to an array
         for i in (0...Int(Double(FFT_SIZE)/2) - 1) {
             calibrationAmplitudes[i].append(amplitudes[i])
         }
@@ -158,6 +159,7 @@ class ViewController: UIViewController {
     }
 
     func computeBaselines(){
+        // Calculate the median amplitude across bins
         calibrationFinished = true
         baselineAmplitudes = []
         for i in (0...Int(Double(FFT_SIZE)/2) - 1) {
@@ -175,17 +177,21 @@ class ViewController: UIViewController {
     }
 
     func detectGestures(frequencies: [Double], amplitudes: [Double]) {
+        // Calculate the frequency bins of interest using the doppler shift formula
         let minPullBin = freqToBin(frequency: TARGET_FREQ * (SOUND_SPEED - MAX_HAND_SPEED) / (SOUND_SPEED + MAX_HAND_SPEED)) / 2
         let maxPullBin = freqToBin(frequency: TARGET_FREQ * (SOUND_SPEED - MIN_HAND_SPEED) / (SOUND_SPEED + MIN_HAND_SPEED)) / 2
         
         let minPushBin = freqToBin(frequency: TARGET_FREQ * (SOUND_SPEED + MIN_HAND_SPEED) / (SOUND_SPEED - MIN_HAND_SPEED)) / 2
         let maxPushBin = freqToBin(frequency: TARGET_FREQ * (SOUND_SPEED + MAX_HAND_SPEED) / (SOUND_SPEED - MAX_HAND_SPEED)) / 2
         
+        // Check for a pull gesture. We assume a simple thresholding function.
         for bin_idx in (minPullBin...maxPullBin) {
             if (amplitudes[bin_idx] > MIN_DB_GAIN + baselineAmplitudes[bin_idx]) {
                 gesture.text = "Pull"
             }
         }
+        
+        // Check for a push gesture
         for bin_idx in (minPushBin...maxPushBin) {
             if (amplitudes[bin_idx] > MIN_DB_GAIN + baselineAmplitudes[bin_idx]) {
                 gesture.text = "Push"
