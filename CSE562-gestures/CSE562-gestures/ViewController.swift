@@ -40,7 +40,7 @@ class ViewController: UIViewController {
     let TIME_INTERVAL = 0.01  // How often to do the gesture check
     let MIN_HAND_SPEED = 1.0  // meters per sec
     let MAX_HAND_SPEED = 15.0  // meters per sec
-    let MIN_DB_GAIN = 20.0
+    let MIN_DB_GAIN = 20.0  // Target frequency bins must increase this much to have a gesture triggered
  
 
     override func viewDidLoad() {
